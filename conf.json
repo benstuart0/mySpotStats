@@ -1,0 +1,5 @@
+{
+    "id" : "419229b358bf4a18b3d9bb77a36d7b37",
+    "secret": "c09235e594d444189641be48419fdc9d",
+    "redirect_uri": "http://127.0.0.1:5000/callback"
+}
