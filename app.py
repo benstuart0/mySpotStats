@@ -28,6 +28,7 @@ REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for produ
 
 @app.route('/')
 def home():
+    print(session['auth_header'])
     if 'auth_header' in session:
         type = request.args.get('type')
         time_range = request.args.get('time_range')
