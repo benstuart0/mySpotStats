@@ -35,9 +35,9 @@ def home():
         print(type)
         print(time_range)
         if type and time_range:
-            return tracks(time_range) if type=='tracks' else artists(time_range)
+            return redirect('/tracks/'+time_range) if type=='tracks' else redirect('/artists/'+time_range)
         elif type:
-            return tracks() if type=='tracks' else artists()
+            return redirect('/tracks') if type=='tracks' else redirect('/artists')
         return render_template('home.html')
     return auth()
 
