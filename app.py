@@ -29,12 +29,7 @@ SCOPE = "user-read-private user-top-read"
 @app.route('/')
 def home():
     if 'auth_header' in session:
-        auth_header = session['auth_header']
-        tg = TrackGrabber(auth_header)
-        tracks = tg.main('long_term',50,0)
-        stats = tg.get_stats(tracks)
-        time_range = tg.time_range
-        return render_template('tracks.html', tracks=tracks, stats=stats, time=times[time_range])
+        return tracks()
     return auth()
 
 @app.route('/tracks')
