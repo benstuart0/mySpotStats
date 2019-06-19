@@ -1,0 +1,17 @@
+<html>
+
+<body>
+    <h3>Top Artists of {{time}}:</h3>
+    <div>
+        <ol>
+            {% for artist in artists %}
+            <li>{{artist['name']}} \\ {{artist['genres']}}</li>
+            {% endfor %}
+        </ol>
+    </div>
+    <div>
+        <h4>Verdict: {{popularity}}</h4>
+    </div>
+</body>
+
+</html>

@@ -4,22 +4,25 @@ import requests
 import json
 
 class ArtistGrabber:
-    def __init__(self, token):
-        self.token = token
-        self.HEADERS = {'content-type': 'application/json', 'authorization': 'Bearer %s' % self.token}
+    def __init__(self, header):
+        self.token = header
+        self.HEADERS = {'content-type': 'application/json', 'authorization': '%s' % self.token}
         self.URL_BASE = 'https://api.spotify.com/v1/me/top/artists'
         self.AUDIO_FEATURES_BASE = 'https://api.spotify.com/v1/audio-features?ids='
 
     def main(self, time_range='medium_term', limit=10, offset=0):
-        url = self.URL_BASE + '?time_range=%s&limit=%s&offset=%s' % (time_range, limit, offset)
+        self.time_range = time_range
+        self.limit = limit
+        self.offset = offset
+        url = self.URL_BASE + '?time_range=%s&limit=%s&offset=%s' % (self.time_range, self.limit, self.offset)
         r = requests.get(url, verify=True, headers=self.HEADERS)
         if str(r) == '<Response [200]>':
-            artists = handle_response(r)
+            artists = self.handle_response(r)
         else:
-            print (json.loads(r.text))
+            print(str(r))
             artists = None
             exit()
-        self.display_artists(artists)
+        return artists
 
     def get_term(self, range):
         if range == 'short_term':
@@ -29,7 +32,15 @@ class ArtistGrabber:
         elif range == 'long_term':
             return 'All Time:'
 
-    def get_pop_rating(self, avePop):
+    def get_pop_rating(self, artists):  # gets the average popularity rating of your top artists
+        total = 0
+        counter = 0
+
+        for artist in artists:
+            total += int(artist['popularity'])
+            counter += 1
+        avePop = total / counter
+
         if avePop < 40:
             return 'Your music tastes are obscure.'
         if avePop < 50:
@@ -41,8 +52,7 @@ class ArtistGrabber:
         artists = []
         r = json.loads(r.text)
         items = r['items']
-        term = self.get_term(range)
-        i = int(offset) + 1
+        i = int(self.offset) + 1
         artist_ids = [item['id'] for item in items]
         for index, item in enumerate(items):
             artist_name = item['name']
@@ -56,7 +66,3 @@ class ArtistGrabber:
             artists.append(artist_obj)
             i += 1
         return artists
-
-    def display_artists(self, artists):
-        for artist in artists:
-            print ("%s. %s \\\\ %s" % (artist['index'],artist['name'], artist['genres']))

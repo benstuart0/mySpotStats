@@ -4,10 +4,10 @@
     <h3>Top Tracks of {{time}}:</h3>
     <ol>
         {% for track in tracks %}
-        <li>{{track['title']}} - {{track['artist']}} \\\\ {{track['key']}}</li>
+        <li>{{track['title']}} - {{track['artist']}} \\ {{track['key']}}</li>
         {% endfor %}
     </ol>
-    <h4>Top Track Averages:</h4>
+    <h4>Averages:</h4>
     <ul>
         <li>Danceability: {{stats['ave_danceability']}}</li>
         <li>Valence: {{stats['ave_valence']}}</li>
