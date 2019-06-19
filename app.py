@@ -59,7 +59,7 @@ def callback():
     auth_token = request.args['code']
     auth_header = spotify.authorize(auth_token, REDIRECT_URI)
     session['auth_header'] = auth_header
-    return redirect('/')
+    return tracks()
 
 @app.route('/auth')
 def auth():
