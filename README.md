@@ -11,3 +11,9 @@ This is an web app to display a user's top tracks and artists from spotify. The 
 ### Instructions to Edit Frontend:
 
 * HTML and CSS code will go in the templates folder.
+
+### TODO:
+
+* Homepage (route: '/') needs to have a form that directs to any other page.
+    * Two tiers of options: tracks & artists --> short_term, medium_term, & long_term
+* Artist pages and track pages follow the same templates (artists.html & tracks.html)
