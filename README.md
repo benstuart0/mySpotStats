@@ -4,9 +4,15 @@ This is an web app to display a user's top tracks and artists from spotify. The 
 
 ### Instructions to Run Project:
 
+##### Local
 * Pull master
-* pip3 install flask
+* pip3 install -r requirements.txt
 * python3 -m flask run (this will run the service locally on http://127.0.0.1:5000/)
+
+##### Remote
+* change REDIRECT_URI in app.py
+* commit all changes
+* git push heroku master (http://myspotstats.herokuapp.com)
 
 ### Instructions to Edit Frontend:
 

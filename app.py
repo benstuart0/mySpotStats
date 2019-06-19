@@ -10,8 +10,8 @@ app.secret_key = 'thisIsTheSecretKeyAYYYY'
 app.config['SESSION_TYPE'] = 'filesystem'
 
 times = {
-    'short_term': '3 Weeks',
-    'medium_term': '6 Months',
+    'short_term': 'Last 3 Weeks',
+    'medium_term': 'Last 6 Months',
     'long_term': 'All Time'
 }
 
@@ -29,6 +29,14 @@ REDIRECT_URI = CLIENT['redirect_uri']
 @app.route('/')
 def home():
     if 'auth_header' in session:
+        type = request.args.get('type')
+        time_range = request.args.get('time_range')
+        print(type)
+        print(time_range)
+        if type and time_range:
+            return tracks(time_range) if type=='tracks' else artists(time_range)
+        elif type:
+            return tracks() if type=='tracks' else artists()
         return render_template('home.html')
     return auth()
 

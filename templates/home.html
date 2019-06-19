@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../static/style.css">
+<script src="../static/script.js"></script>
 <head>
-    <h3>Welcome to My Spot Stats!</h3><br>
+<h2>mySpotStats</h2>
 </head>
-
 <body>
-    <form>
-      <input type="radio" name="gender" value="artists"> Artists<br>
-      <input type="radio" name="gender" value="tracks"> Tracks<br>
+    <h5>View the top 99 tracks or artists from a time period of your choice</h5>
+    <form onsubmit="onSubmit()">
+        Type:<br>
+        <input type="radio" name="type" value="artists"> Artists<br>
+        <input type="radio" name="type" value="tracks"> Tracks<br>
+        <br>
+        Time Range:<br>
+        <input type="radio" name="time_range" value="short_term"> 3 Weeks<br>
+        <input type="radio" name="time_range" value="medium_term"> 6 Months<br>
+        <input type="radio" name="time_range" value="medium_term"> All Time<br>
+        <br>
+        <input type="submit" value="Submit">
     </form>
 </body>
 
