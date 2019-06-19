@@ -28,7 +28,6 @@ REDIRECT_URI = CLIENT['redirect_uri']
 
 @app.route('/')
 def home():
-    print(session['auth_header'])
     if 'auth_header' in session:
         type = request.args.get('type')
         time_range = request.args.get('time_range')
