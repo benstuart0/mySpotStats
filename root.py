@@ -42,7 +42,7 @@ def tracks(time_range="long_term"):
     if 'auth_header' in session:
         auth_header = session['auth_header']
         tg = TrackGrabber(auth_header)
-        tracks = tg.main(time_range,50,0)
+        tracks = tg.main(time_range,49,0) + tg.main(time_range,50,49)
         stats = tg.get_stats(tracks)
         return render_template('tracks.html', tracks=tracks, stats=stats, time=times[time_range])
     return auth()
