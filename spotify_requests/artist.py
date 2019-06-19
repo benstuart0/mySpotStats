@@ -41,9 +41,9 @@ class ArtistGrabber:
             counter += 1
         avePop = total / counter
 
-        if avePop < 40:
+        if avePop < 55:
             return 'Your music tastes are obscure.'
-        if avePop < 50:
+        if avePop < 65:
             return "Fuck you."
         else:
             return "You basic bitch."

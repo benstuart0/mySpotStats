@@ -20,16 +20,16 @@ SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 CLIENT = json.load(open('conf.json', 'r+'))
 CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
-REDIRECT_URI = CLIENT['redirect_uri']
-REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback'
 
 SCOPE = "user-read-private user-top-read"
+REDIRECT_URI = CLIENT['redirect_uri']
+#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 
 @app.route('/')
 def home():
     if 'auth_header' in session:
-        return tracks()
+        return render_template('home.html')
     return auth()
 
 @app.route('/tracks')
@@ -57,9 +57,9 @@ def artists(time_range="long_term"):
 @app.route('/callback')
 def callback():
     auth_token = request.args['code']
-    auth_header = spotify.authorize(auth_token)
+    auth_header = spotify.authorize(auth_token, REDIRECT_URI)
     session['auth_header'] = auth_header
-    return home()
+    return redirect('/')
 
 @app.route('/auth')
 def auth():

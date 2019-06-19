@@ -12,16 +12,13 @@ SPOTIFY_TOKEN_URL = SPOTIFY_AUTH_BASE_URL.format('api/token')
 CLIENT = json.load(open('conf.json', 'r+'))
 CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
-REDIRECT_URI = CLIENT['redirect_uri']
-REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback'
 
-
-def authorize(auth_token):
+def authorize(auth_token, redirect_uri):
 
     code_payload = {
         "grant_type": "authorization_code",
         "code": str(auth_token),
-        "redirect_uri": REDIRECT_URI
+        "redirect_uri": redirect_uri
     }
 
     #python 3 or above
