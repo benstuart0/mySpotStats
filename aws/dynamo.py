@@ -4,7 +4,8 @@ from spotify_requests.artist import ArtistGrabber
 import json
 from decimal import Decimal
 
-dynamoDB = boto3.resource('dynamodb')
+client = boto3.client()
+dynamoDB = boto3.resource('dynamodb', region_name='us-east-2')
 table = dynamoDB.Table('spotify-user-top-songs')
 
 def update_db(user, auth_header):
