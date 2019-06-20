@@ -117,6 +117,8 @@ class TrackGrabber:
         term = self.get_term(range)
         i = int(self.offset) + 1
         track_ids = [song['id'] for song in items]
+        if len(track_ids) == 0:
+            return []
         track_audio_features = self.get_audio_features(track_ids)
         for index, item in enumerate(items):
             songTitle = item['name']
