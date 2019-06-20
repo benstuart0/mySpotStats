@@ -23,7 +23,7 @@ CLIENT_SECRET = CLIENT['secret']
 
 SCOPE = "user-read-private user-top-read"
 REDIRECT_URI = CLIENT['redirect_uri']
-#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
+REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 
 @app.route('/')
@@ -31,8 +31,6 @@ def home():
     if 'auth_header' in session:
         type = request.args.get('type')
         time_range = request.args.get('time_range')
-        print(type)
-        print(time_range)
         if type and time_range:
             return redirect('/tracks/'+time_range) if type=='tracks' else redirect('/artists/'+time_range)
         elif type:

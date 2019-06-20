@@ -1,4 +1,13 @@
 html {
-    background-color: powderblue;
+    background-color: #80C1CA;
     font-family: georgia;
+}
+
+a:hover {
+    color: #6175B2;
+}
+
+a {
+    text-decoration: none;
+    color: black;
 }
