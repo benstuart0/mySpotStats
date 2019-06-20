@@ -12,7 +12,7 @@ app.secret_key = 'thisIsTheSecretKeyAYYYY'
 app.config['SESSION_TYPE'] = 'filesystem'
 
 times = {
-    'short_term': 'Last 3 Weeks',
+    'short_term': 'Last Month',
     'medium_term': 'Last 6 Months',
     'long_term': 'All Time'
 }
