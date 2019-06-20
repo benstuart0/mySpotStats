@@ -23,7 +23,7 @@ CLIENT_SECRET = CLIENT['secret']
 
 SCOPE = "user-read-private user-top-read playlist-modify-private"
 REDIRECT_URI = CLIENT['redirect_uri']
-REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
+#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 @app.route('/')
 def home():
