@@ -2,3 +2,4 @@ spotEnv
 spotEnv/*
 __pycache__
 __pycache__/*
+spotify_requests/__pycache__/*
