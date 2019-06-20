@@ -25,7 +25,7 @@ CLIENT_SECRET = CLIENT['secret']
 
 SCOPE = "user-read-private user-top-read playlist-modify-private user-read-email"
 REDIRECT_URI = CLIENT['redirect_uri']
-#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
+REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 @app.route('/')
 def home():
@@ -34,7 +34,7 @@ def home():
         ug = UserGrabber(session['auth_header'])
         user = ug.get_user()
         dynamo.update_db(user, session['auth_header'])
-        
+
         type = request.args.get('type')
         time_range = request.args.get('time_range')
         if type and time_range:
