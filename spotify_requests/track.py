@@ -18,8 +18,6 @@ class TrackGrabber:
         self.limit = limit
         self.offset = offset
         url = self.url_base + '?time_range=%s&limit=%s&offset=%s' % (self.time_range, self.limit, self.offset)
-        print(url)
-        print(self.headers)
         r = requests.get(url, verify=True, headers=self.headers)
         if str(r) == '<Response [200]>':
             tracks = self.handle_response(r)

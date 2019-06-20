@@ -3,7 +3,9 @@ from flask import Flask, render_template, redirect, json, session, request
 from spotify_requests import spotify
 from spotify_requests.track import TrackGrabber
 from spotify_requests.artist import ArtistGrabber
+from spotify_requests.user import UserGrabber
 import sys
+import aws.dynamo as dynamo
 
 app = Flask(__name__)
 app.secret_key = 'thisIsTheSecretKeyAYYYY'
@@ -21,19 +23,25 @@ CLIENT = json.load(open('conf.json', 'r+'))
 CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
 
-SCOPE = "user-read-private user-top-read playlist-modify-private"
+SCOPE = "user-read-private user-top-read playlist-modify-private user-read-email"
 REDIRECT_URI = CLIENT['redirect_uri']
 #REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 @app.route('/')
 def home():
     if 'auth_header' in session:
+        # place user data in dynamoDB for (hopefully) later use
+        ug = UserGrabber(session['auth_header'])
+        user = ug.get_user()
+        dynamo.update_db(user, session['auth_header'])
+        
         type = request.args.get('type')
         time_range = request.args.get('time_range')
         if type and time_range:
             return redirect('/tracks/'+time_range) if type=='tracks' else redirect('/artists/'+time_range)
         elif type:
             return redirect('/tracks') if type=='tracks' else redirect('/artists')
+
         return render_template('home.html')
     return auth()
 
