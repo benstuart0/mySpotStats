@@ -4,14 +4,21 @@
 <title>mySpotStats</title>
 
 <head>
-    <h2><a href="/">mySpotStats</a></h2>
+    <div class="header-container">
+        <div id="site-title">
+            <h2><a href="/">mySpotStats</a></h2>
+        </div>
+        <div id="playlist-button">
+            <input type="submit" name="submit_button" value="Create Playlist">
+        </div>
+    </div>
 </head>
 
 <body>
     <h3>Top Tracks of {{time}}:</h3>
     <ol>
         {% for track in tracks %}
-        <li>{{track['title']}} - {{track['artist']}} \\ {{track['key']}}</li>
+        <li>{{track['title']}} - {{track['artist']}} \\ <span class="song-key">{{track['key']}}</span></li>
         {% endfor %}
     </ol>
     <h4>Averages:</h4>

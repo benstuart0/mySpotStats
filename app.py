@@ -21,10 +21,9 @@ CLIENT = json.load(open('conf.json', 'r+'))
 CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
 
-SCOPE = "user-read-private user-top-read"
+SCOPE = "user-read-private user-top-read playlist-modify-private"
 REDIRECT_URI = CLIENT['redirect_uri']
-REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
-
+#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 @app.route('/')
 def home():
@@ -42,6 +41,8 @@ def home():
 @app.route('/tracks/<time_range>')
 def tracks(time_range="long_term"):
     if 'auth_header' in session:
+        submit_button = request.args.get('submit_button')
+        print(submit_button)
         auth_header = session['auth_header']
         tg = TrackGrabber(auth_header)
         tracks = tg.main(time_range,49,0) + tg.main(time_range,50,49)
