@@ -41,8 +41,6 @@ def home():
 @app.route('/tracks/<time_range>')
 def tracks(time_range="long_term"):
     if 'auth_header' in session:
-        submit_button = request.args.get('submit_button')
-        print(submit_button)
         auth_header = session['auth_header']
         tg = TrackGrabber(auth_header)
         tracks = tg.main(time_range,49,0) + tg.main(time_range,50,49)
