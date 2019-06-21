@@ -25,7 +25,7 @@ CLIENT_SECRET = CLIENT['secret']
 
 SCOPE = "user-read-private user-top-read playlist-modify-private user-read-email"
 REDIRECT_URI = CLIENT['redirect_uri']
-#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
+REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 @app.route('/')
 def home():
@@ -43,7 +43,7 @@ def home():
             return redirect('/tracks') if type=='tracks' else redirect('/artists')
 
         return render_template('home.html')
-    return auth()
+    return redirect('/auth')
 
 @app.route('/tracks')
 @app.route('/tracks/<time_range>')
@@ -54,7 +54,7 @@ def tracks(time_range="long_term"):
         tracks = tg.main(time_range,49,0) + tg.main(time_range,50,49)
         stats = tg.get_stats(tracks)
         return render_template('tracks.html', tracks=tracks, stats=stats, time=times[time_range])
-    return auth()
+    return redirect('/auth')
 
 @app.route('/artists')
 @app.route('/artists/<time_range>')
@@ -65,7 +65,7 @@ def artists(time_range="long_term"):
         artists = ag.main(time_range,49,0) + ag.main(time_range,50,49)  # gets top 99 artists (can only query 50 at a time)
         popularity = ag.get_pop_rating(artists)
         return render_template('artists.html', artists=artists, popularity=popularity, time=times[time_range])
-    return auth()
+    return redirect('/auth')
 
 @app.route('/callback')
 def callback():
