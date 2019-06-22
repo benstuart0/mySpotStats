@@ -136,7 +136,8 @@ class TrackGrabber:
                 'valence': audio_features['valence'],
                 'energy': audio_features['energy'],
                 'danceability': audio_features['danceability'],
-                'speechiness': audio_features['speechiness']
+                'speechiness': audio_features['speechiness'],
+                'uri': item['uri']
             }
             tracks.append(track_obj)
             i += 1

@@ -4,4 +4,5 @@ function onSubmit() {
 
 function createPlaylist() {
     let playlist_trigger = true;
+    alert("Button has been clicked");
 }

@@ -4,6 +4,7 @@ from spotify_requests import spotify
 from spotify_requests.track import TrackGrabber
 from spotify_requests.artist import ArtistGrabber
 from spotify_requests.user import UserGrabber
+from spotify_requests.playlist_creator import PlaylistCreator
 import sys
 import aws.dynamo as dynamo
 
@@ -12,8 +13,8 @@ app.secret_key = 'thisIsTheSecretKeyAYYYY'
 app.config['SESSION_TYPE'] = 'filesystem'
 
 times = {
-    'short_term': 'Last Month',
-    'medium_term': 'Last 6 Months',
+    'short_term': 'the Last Month',
+    'medium_term': 'the Last 6 Months',
     'long_term': 'All Time'
 }
 
@@ -23,9 +24,9 @@ CLIENT = json.load(open('conf.json', 'r+'))
 CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
 
-SCOPE = "user-read-private user-top-read playlist-modify-private user-read-email"
+SCOPE = "user-read-private user-top-read playlist-modify-private playlist-modify-public user-read-email"
 REDIRECT_URI = CLIENT['redirect_uri']
-#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
+REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 @app.route('/')
 def home():
@@ -53,6 +54,15 @@ def tracks(time_range="long_term"):
         tg = TrackGrabber(auth_header)
         tracks = tg.main(time_range,49,0) + tg.main(time_range,50,49)
         stats = tg.get_stats(tracks)
+
+        create_playlist = request.args.get('create_playlist')
+        if create_playlist == "Create Playlist":
+            ug = UserGrabber(session['auth_header'])
+            user = ug.get_user()
+            pc = PlaylistCreator(auth_header, user)
+            playlist = pc.create_playlist(times[time_range], tracks)
+            if not playlist:
+                redirect('/tracks')
         return render_template('tracks.html', tracks=tracks, stats=stats, time=times[time_range])
     return redirect('/auth')
 
