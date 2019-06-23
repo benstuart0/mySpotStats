@@ -50,6 +50,9 @@ class ArtistGrabber:
             return "You basic bitch."
 
     def handle_response(self, r):
+        """
+        Handle json object holding list of artists to more easily work with
+        """
         artists = []
         r = json.loads(r.text)
         items = r['items']

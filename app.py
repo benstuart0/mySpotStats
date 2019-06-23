@@ -24,9 +24,9 @@ CLIENT = json.load(open('conf.json', 'r+'))
 CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
 
-SCOPE = "user-read-private user-top-read playlist-modify-private playlist-modify-public user-read-email"
+SCOPE = "user-read-private user-top-read playlist-modify-private user-read-email playlist-read-private"
 REDIRECT_URI = CLIENT['redirect_uri']
-REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
+#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 @app.route('/')
 def home():
