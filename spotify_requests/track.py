@@ -4,6 +4,9 @@ import requests
 import json
 
 class TrackGrabber:
+    """
+    Class for making requests to load tracks onto track pages
+    """
     def __init__(self, header):
         self.token = header
         self.headers = {'content-type': 'application/json', 'authorization': '%s' % self.token}

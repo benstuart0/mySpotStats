@@ -4,7 +4,10 @@ import requests
 import json
 
 class PlaylistCreator:
-    def __init__(self, header,user):
+    """
+    Class for creating playlist of loaded tracks
+    """
+    def __init__(self, header, user):
         self.playlists_url = 'https://api.spotify.com/v1/playlists/{}/tracks'
         self.user_playlists_url = 'https://api.spotify.com/v1/users/{}/playlists'
         self.token = header
@@ -20,7 +23,7 @@ class PlaylistCreator:
         playlist_description = "My 99 most listened to tracks of " + time_range
         body = json.dumps({'name': playlist_name, 'description': playlist_description, 'public': False})
         r = requests.post(self.url, verify=True, headers=self.headers, data=body)
-        if r.status_code < 300:    # check if response is some kind of 200
+        if r.status_code // 100 == 2:    # check if response is some kind of 200
             playlist_id = self.handle_response(r)
         else:
             print(str(r))
@@ -37,7 +40,7 @@ class PlaylistCreator:
         track_uris = [track['uri'] for track in tracks]
         body = json.dumps({'uris': track_uris})
         r = requests.post(add_tracks_url, verify=True, headers=self.headers, data=body)
-        if r.status_code < 300:
+        if r.status_code // 100 == 2:
             return True
         return False
 
@@ -72,9 +75,7 @@ class PlaylistCreator:
     def _get_playlists(self):
         get_playlists_url = self.user_playlists_url.format(self.user_id)
         r = requests.get(get_playlists_url, verify=True, headers=self.headers)
-        print("Get playlists from user result")
-        print(r.status_code)
-        if r.status_code < 300:
+        if r.status_code // 100 == 2:
             playlists = json.loads(r.text)
             return playlists
         else:

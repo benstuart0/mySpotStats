@@ -14,7 +14,9 @@ CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
 
 def authorize(auth_token, redirect_uri):
-
+    """
+    Method to retrieve authorization token from spotify
+    """
     code_payload = {
         "grant_type": "authorization_code",
         "code": str(auth_token),

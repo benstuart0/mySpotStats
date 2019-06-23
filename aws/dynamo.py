@@ -12,7 +12,6 @@ def update_db(user, auth_header):
     tracks = json.loads(json.dumps(tracks), parse_float=Decimal)
     artists = get_artists(auth_header)
     artists = json.loads(json.dumps(artists), parse_float=Decimal)
-    import pdb; pdb.set_trace()
     table.put_item(Item={
         'user_id': user['id'],
         'user_uri': user['uri'],

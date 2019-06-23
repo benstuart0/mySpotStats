@@ -4,6 +4,9 @@ import requests
 import json
 
 class ArtistGrabber:
+    """
+    Class for making requests to load artists for artist pages
+    """
     def __init__(self, header):
         self.token = header
         self.HEADERS = {'content-type': 'application/json', 'authorization': '%s' % self.token}

@@ -4,6 +4,9 @@ import requests
 import json
 
 class UserGrabber():
+    """
+    Class to make requests to retrieve data on user
+    """
     def __init__(self, header):
         self.token = header
         self.headers = {'content-type': 'application/json', 'authorization': '%s' % self.token}
@@ -11,7 +14,7 @@ class UserGrabber():
 
     def get_user(self):
         r = requests.get(self.url, verify=True, headers=self.headers)
-        if str(r) == '<Response [200]>':
+        if r.status_code // 100 == 2:
             user = self.handle_response(r)
         else:
             print(str(r))
