@@ -45,9 +45,9 @@ class ArtistGrabber:
         if avePop < 55:
             return 'Your music tastes are obscure.'
         if avePop < 65:
-            return "Fuck you."
+            return "You listen to somewhat popular music."
         else:
-            return "You basic bitch."
+            return "You listen to popular music."
 
     def _handle_response(self, r):
         """

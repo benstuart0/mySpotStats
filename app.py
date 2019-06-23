@@ -24,7 +24,7 @@ CLIENT = json.load(open('conf.json', 'r+'))
 CLIENT_ID = CLIENT['id']
 CLIENT_SECRET = CLIENT['secret']
 
-SCOPE = "user-read-private user-top-read playlist-modify-private user-read-email playlist-read-private"
+SCOPE = "user-read-private user-top-read playlist-modify-public playlist-modify-private user-read-email playlist-read-private"
 REDIRECT_URI = CLIENT['redirect_uri']
 #REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
@@ -69,7 +69,11 @@ def tracks(time_range="long_term"):
         stats = tg.get_stats(tracks)
 
         create_playlist = request.args.get('create_playlist')
+        playlist_cancel = request.args.get('playlist_cancel')
         if create_playlist == "Create Playlist":
+            if playlist_cancel == 'True':
+                print("Hey you canceled the playlist")
+                return redirect('/tracks/' + time_range)
             ug = UserGrabber(session['auth_header'])
             user = ug.get_user()
             pc = PlaylistCreator(session['auth_header'], user)

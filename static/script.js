@@ -4,8 +4,12 @@ function onSubmit() {
 
 function createPlaylist() {
     var txt;
+    var current_url = window.location;
     if(confirm("Would you like to create a playlist with these songs?")) {
         txt = "Playlist is being created...";
-        document.getElementById("playlist-button-response").innerHTML = txt;
     }
+    else {
+        txt = "Alas, cancel doesn't work so we're making a playlist anyways!"
+    }
+    document.getElementById("playlist-button-response").innerHTML = txt;
 }
