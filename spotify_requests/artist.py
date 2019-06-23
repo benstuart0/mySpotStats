@@ -23,7 +23,7 @@ class ArtistGrabber:
         url = self.URL_BASE + '?time_range=%s&limit=%s&offset=%s' % (self.time_range, self.limit, self.offset)
         r = requests.get(url, verify=True, headers=self.HEADERS)
         if str(r) == '<Response [200]>':
-            artists = self.handle_response(r)
+            artists = self._handle_response(r)
         else:
             print(str(r))
             artists = None
@@ -49,7 +49,7 @@ class ArtistGrabber:
         else:
             return "You basic bitch."
 
-    def handle_response(self, r):
+    def _handle_response(self, r):
         """
         Handle json object holding list of artists to more easily work with
         """

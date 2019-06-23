@@ -48,7 +48,7 @@ class TrackGrabber:
         url = self.url_base + '?time_range=%s&limit=%s&offset=%s' % (self.time_range, self.limit, self.offset)
         r = requests.get(url, verify=True, headers=self.headers)
         if str(r) == '<Response [200]>':
-            tracks = self.handle_response(r)
+            tracks = self._handle_response(r)
         else:
             print(str(r))
             tracks = None
@@ -66,13 +66,13 @@ class TrackGrabber:
         else:
             return "You basic bitch."
 
-    def translate_key(self, key, mode):
+    def _translate_key(self, key, mode):
         key = self.keys[key]
         mode = self.modes[mode]
         return key + mode
 
 
-    def get_audio_features(self, ids):
+    def _get_audio_features(self, ids):
         """
         Retrieves audio features of a track
         """
@@ -86,7 +86,7 @@ class TrackGrabber:
             audio_features_list = json.loads(r.text)
             for audio_features in audio_features_list['audio_features']:
                 if audio_features:
-                    key = self.translate_key(audio_features['key'],audio_features['mode'])
+                    key = self._translate_key(audio_features['key'],audio_features['mode'])
                     audio_features = {
                         'key': key,
                         'valence':audio_features['valence'],
@@ -109,7 +109,7 @@ class TrackGrabber:
 
         return track_features
 
-    def handle_response(self, r):
+    def _handle_response(self, r):
         """
         Unpacks JSON list of tracks to make it easier to use
         """
@@ -120,7 +120,7 @@ class TrackGrabber:
         track_ids = [song['id'] for song in items]
         if len(track_ids) == 0:
             return []
-        track_audio_features = self.get_audio_features(track_ids)
+        track_audio_features = self._get_audio_features(track_ids)
         for index, item in enumerate(items):
             songTitle = item['name']
             artistName = item['artists'][0]['name']
