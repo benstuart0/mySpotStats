@@ -3,6 +3,9 @@ function onSubmit() {
 }
 
 function createPlaylist() {
-    let playlist_trigger = true;
-    alert("Button has been clicked");
+    var txt;
+    if(confirm("Would you like to create a playlist with these songs?")) {
+        txt = "Playlist is being created...";
+        document.getElementById("playlist-button-response").innerHTML = txt;
+    }
 }

@@ -1,11 +1,11 @@
+import sys
 from urllib.parse import quote
-from flask import Flask, render_template, redirect, json, session, request
+from flask import Flask, render_template, redirect, json, session, request, make_response
 from spotify_requests import spotify
 from spotify_requests.track import TrackGrabber
 from spotify_requests.artist import ArtistGrabber
 from spotify_requests.user import UserGrabber
 from spotify_requests.playlist_creator import PlaylistCreator
-import sys
 import aws.dynamo as dynamo
 
 app = Flask(__name__)
@@ -26,16 +26,15 @@ CLIENT_SECRET = CLIENT['secret']
 
 SCOPE = "user-read-private user-top-read playlist-modify-private playlist-modify-public user-read-email"
 REDIRECT_URI = CLIENT['redirect_uri']
-REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
+#REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for production
 
 @app.route('/')
 def home():
+    """
+    Home page, redirects to other pages based on user input
+    """
     if 'auth_header' in session:
-        # place user data in dynamoDB for (hopefully) later use
-        ug = UserGrabber(session['auth_header'])
-        user = ug.get_user()
-        dynamo.update_db(user, session['auth_header'])
-
+        # get form responses
         type = request.args.get('type')
         time_range = request.args.get('time_range')
         if type and time_range:
@@ -43,15 +42,29 @@ def home():
         elif type:
             return redirect('/tracks') if type=='tracks' else redirect('/artists')
 
-        return render_template('home.html')
+        # place user data in dynamoDB for (hopefully) later use
+        data_cookie = request.cookies.get('data_retrieved')
+        resp = make_response(render_template('home.html'))
+        if not data_cookie or data_cookie != 'yes':
+            ug = UserGrabber(session['auth_header'])
+            user = ug.get_user()
+            dynamo.update_db(user, session['auth_header'])
+            resp.set_cookie('data_retrieved', 'yes')
+        try:
+            return resp
+        except:
+            return redirect('/auth')    # send to auth if homepage doesn't load
+
     return redirect('/auth')
 
 @app.route('/tracks')
 @app.route('/tracks/<time_range>')
 def tracks(time_range="long_term"):
+    """
+    Track list pages
+    """
     if 'auth_header' in session:
-        auth_header = session['auth_header']
-        tg = TrackGrabber(auth_header)
+        tg = TrackGrabber(session['auth_header'])
         tracks = tg.main(time_range,49,0) + tg.main(time_range,50,49)
         stats = tg.get_stats(tracks)
 
@@ -59,7 +72,7 @@ def tracks(time_range="long_term"):
         if create_playlist == "Create Playlist":
             ug = UserGrabber(session['auth_header'])
             user = ug.get_user()
-            pc = PlaylistCreator(auth_header, user)
+            pc = PlaylistCreator(session['auth_header'], user)
             playlist = pc.create_playlist(times[time_range], tracks)
             if not playlist:
                 redirect('/tracks')
@@ -69,9 +82,11 @@ def tracks(time_range="long_term"):
 @app.route('/artists')
 @app.route('/artists/<time_range>')
 def artists(time_range="long_term"):
+    """
+    Artist list pages
+    """
     if 'auth_header' in session:
-        auth_header = session['auth_header']
-        ag = ArtistGrabber(auth_header)
+        ag = ArtistGrabber(session['auth_header'])
         artists = ag.main(time_range,49,0) + ag.main(time_range,50,49)  # gets top 99 artists (can only query 50 at a time)
         popularity = ag.get_pop_rating(artists)
         return render_template('artists.html', artists=artists, popularity=popularity, time=times[time_range])
@@ -79,13 +94,18 @@ def artists(time_range="long_term"):
 
 @app.route('/callback')
 def callback():
+    """
+    Called from Auth endpoint. Retrieves auth token and redirects to home page.
+    """
     auth_token = request.args['code']
-    auth_header = spotify.authorize(auth_token, REDIRECT_URI)
-    session['auth_header'] = auth_header
+    session['auth_header'] = spotify.authorize(auth_token, REDIRECT_URI)
     return redirect('/')
 
 @app.route('/auth')
 def auth():
+    """
+    Signs into spotify account
+    """
     return redirect(SPOTIFY_AUTH_URL+ '?response_type=code'
     + '&client_id=' + CLIENT_ID
     + '&scope=' + quote(SCOPE.encode("utf-8")) +
