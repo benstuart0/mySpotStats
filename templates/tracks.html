@@ -22,7 +22,7 @@
     <h3>Top Tracks of {{time}}:</h3>
     <ol>
         {% for track in tracks %}
-        <li>{{track['title']}} - {{track['artist']}} \\ <span class="song-key">{{track['key']}}</span></li>
+        <li>{{track['artist']}} - {{track['title']}} || <span class="song-key">{{track['key']}}</span></li>
         {% endfor %}
     </ol>
     <h4>Averages:</h4>

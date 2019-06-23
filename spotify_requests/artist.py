@@ -14,6 +14,9 @@ class ArtistGrabber:
         self.AUDIO_FEATURES_BASE = 'https://api.spotify.com/v1/audio-features?ids='
 
     def main(self, time_range='medium_term', limit=10, offset=0):
+        """
+        Class for making requests to load tracks onto track pages
+        """
         self.time_range = time_range
         self.limit = limit
         self.offset = offset
@@ -27,15 +30,10 @@ class ArtistGrabber:
             exit()
         return artists
 
-    def get_term(self, range):
-        if range == 'short_term':
-            return 'the last 4 Weeks:'
-        elif range == 'medium_term':
-            return 'the last 6 Months:'
-        elif range == 'long_term':
-            return 'All Time:'
-
-    def get_pop_rating(self, artists):  # gets the average popularity rating of your top artists
+    def get_pop_rating(self, artists):
+        """
+        Gets average popularity of top artists. Used to display verdict at bottom of artist pages.
+        """
         total = 0
         counter = 0
 

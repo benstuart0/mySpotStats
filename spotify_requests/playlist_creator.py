@@ -16,26 +16,38 @@ class PlaylistCreator:
         self.url = 'https://api.spotify.com/v1/users/{}/playlists'.format(self.user_id)
 
     def create_playlist(self, time_range, tracks):
+        """
+        Main function of this class. Creates a playlist given time range and top tracks.
+        """
         playlist_name = "My Top Tracks of " + time_range
-        #playlist_exists = self._check_playlist_exists(playlist_name)
+        playlist_description = "My 99 most listened to tracks of " + time_range
+        #playlist_exists = self._check_playlist_exists(playlist_name)   # write over playlist if it already exists. currently doesn't work because the playlist doesn't show up when getting user's playlists.
         #if playlist_exists:
             #return self._override_playlist(playlist_exists, tracks)
-        playlist_description = "My 99 most listened to tracks of " + time_range
+
         body = json.dumps({'name': playlist_name, 'description': playlist_description, 'public': False})
         r = requests.post(self.url, verify=True, headers=self.headers, data=body)
         if r.status_code // 100 == 2:    # check if response is some kind of 200
-            playlist_id = self.handle_response(r)
+            playlist_id = self._handle_response(r)
         else:
-            print(str(r))
+            print(r.status_code)
             playlist_id = 0
             return False
 
         fill_playlist = self._add_songs_to_playlist(playlist_id, tracks)
-        if fill_playlist:
-            return True
-        return False
+        return True if fill_playlist else False
+
+    def _handle_response(self, r):
+        """
+        Handles JSON data and just returns id of playlist
+        """
+        r = json.loads(r.text)
+        return r['id']
 
     def _add_songs_to_playlist(self, playlist_id, tracks):
+        """
+        Given playlist id and list of tracks, adds songs to a playlist
+        """
         add_tracks_url = self.playlists_url.format(playlist_id)
         track_uris = [track['uri'] for track in tracks]
         body = json.dumps({'uris': track_uris})
@@ -45,25 +57,31 @@ class PlaylistCreator:
         return False
 
     def _check_playlist_exists(self, playlist_name):
-        playlists = self._get_playlists()
+        """
+        Given a name, checks if a user has a certain playlist
+        """
+        playlists = self._get_user_playlists()
         playlist_titles = [playlist['name'] for playlist in playlists['items']]
-        import pdb; pdb.set_trace()
         for playlist in playlists['items']:
             if playlist['name'] == playlist_name:
                 return playlist['id']
         return False
 
     def _override_playlist(self, playlist_id, new_tracks):
-        print("YOURE STARTING TO OVERRIDE PLAYLIST BOIIIIi")
+        """
+        Updates a user's playlist. Deletes all old tracks and replaces with new tracks.
+        """
         # get old playlist tracks
         get_playlist_tracks_url = self.playlists_url.format(playlist_id)
         r = requests.get(get_playlist_tracks_url, verify=True, headers=headers)
         tracks = json.loads(r.text)
         track_uris = [track['uri'] for track in tracks]
+
         # delete old playlist tracks
         body = {'tracks':track_uris}
         delete_playlist_tracks_url = self.playlists_url.format(playlist_id)
         r = requests.delete(delete_playlist_tracks_url, verify=True, headers=headers, data=body)
+
         # add new playlist tracks
         new_track_uris = [track['uri'] for track in new_tracks]
         body = {'tracks':new_track_uris}
@@ -72,7 +90,10 @@ class PlaylistCreator:
         print("YOU JUSt oVERRODE THE PLAYLIST BOII")
         return True
 
-    def _get_playlists(self):
+    def _get_user_playlists(self):
+        """
+        Gets a list of a user's playlists
+        """
         get_playlists_url = self.user_playlists_url.format(self.user_id)
         r = requests.get(get_playlists_url, verify=True, headers=self.headers)
         if r.status_code // 100 == 2:
@@ -80,8 +101,3 @@ class PlaylistCreator:
             return playlists
         else:
             return None
-
-    def handle_response(self, r):
-        r = json.loads(r.text)
-        id = r['id']
-        return id

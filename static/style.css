@@ -21,6 +21,10 @@ h2 {
     color: #664A25;
 }
 
+.genre-text {
+    color: #664A25;
+}
+
 .header-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

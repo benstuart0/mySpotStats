@@ -3,11 +3,33 @@ import sys
 import requests
 import json
 
+MODES = {
+    0: ' Minor',
+    1: ' Major'
+}
+
+KEYS = {
+    0: 'C',
+    1: 'Db',
+    2: 'D',
+    3: 'Eb',
+    4: 'E',
+    5: 'F',
+    6: 'Gb',
+    7: 'G',
+    8: 'Ab',
+    9: 'A',
+    10: 'Bb',
+    11: 'B'
+}
+
 class TrackGrabber:
     """
     Class for making requests to load tracks onto track pages
     """
     def __init__(self, header):
+        self.modes = MODES
+        self.keys = KEYS
         self.token = header
         self.headers = {'content-type': 'application/json', 'authorization': '%s' % self.token}
         self.url_base = 'https://api.spotify.com/v1/me/top/tracks'
@@ -17,6 +39,9 @@ class TrackGrabber:
         self.offset = 0
 
     def main(self, time_range='medium_term', limit=10, offset=0):
+        """
+        Makes request to retrieve user's top tracks in certain timeframe
+        """
         self.time_range = time_range
         self.limit = limit
         self.offset = offset
@@ -30,15 +55,10 @@ class TrackGrabber:
             exit()
         return tracks
 
-    def get_term(self, range):
-        if range == 'short_term':
-            return 'the last 4 Weeks:'
-        elif range == 'medium_term':
-            return 'the last 6 Months:'
-        elif range == 'long_term':
-            return 'All Time:'
-
     def get_pop_rating(self, avePop):
+        """
+        Uses the average popularity of the artists to give a verdict on your overall taste in music.
+        """
         if avePop < 40:
             return 'Your music tastes are obscure.'
         if avePop < 50:
@@ -47,46 +67,22 @@ class TrackGrabber:
             return "You basic bitch."
 
     def translate_key(self, key, mode):
-        result = ''
-        if mode == 1:
-            mode = ' Major'
-        if mode == 0:
-            mode = ' Minor'
-        if key == 0:
-            pitch = 'C'
-        if key == 1:
-            pitch = 'C#'
-        if key == 2:
-            pitch = 'D'
-        if key == 3:
-            pitch = 'Eb'
-        if key == 4:
-            pitch = 'E'
-        if key == 5:
-            pitch = 'F'
-        if key == 6:
-            pitch = 'F#'
-        if key == 7:
-            pitch = 'G'
-        if key == 8:
-            pitch = 'Ab'
-        if key == 9:
-            pitch = 'A'
-        if key == 10:
-            pitch = 'Bb'
-        if key == 11:
-            pitch = 'B'
-        return pitch + mode
+        key = self.keys[key]
+        mode = self.modes[mode]
+        return key + mode
 
 
     def get_audio_features(self, ids):
+        """
+        Retrieves audio features of a track
+        """
         track_features = []
         url = self.audio_features_base + ids[0]
         ids.pop(0)
         for id in ids:
             url = url + ',%s' % id
         r = requests.get(url, verify=True, headers=self.headers)
-        if str(r) == '<Response [200]>':
+        if r.status_code // 100 == 2:
             audio_features_list = json.loads(r.text)
             for audio_features in audio_features_list['audio_features']:
                 if audio_features:
@@ -114,10 +110,12 @@ class TrackGrabber:
         return track_features
 
     def handle_response(self, r):
+        """
+        Unpacks JSON list of tracks to make it easier to use
+        """
         tracks = []
         r = json.loads(r.text)
         items = r['items']
-        term = self.get_term(range)
         i = int(self.offset) + 1
         track_ids = [song['id'] for song in items]
         if len(track_ids) == 0:
@@ -146,14 +144,11 @@ class TrackGrabber:
             i += 1
         return tracks
 
-    def display_tracks(self, tracks):
-        toReturn = ""
-        for track in tracks:
-            toReturn += ("%s. %s - %s \\\\ %s\n" % (track['index'],track['title'],track['artist'],track['key']))
-        return toReturn
 
     def get_stats(self, tracks):
-        toReturn = ""
+        """
+        Gets ultimate stats on tracks (displayed at bottom of page). Could be updated to make more readable
+        """
         danceability = [track['danceability'] for track in tracks]
         valence = [track['valence'] for track in tracks]
         energy = [track['energy'] for track in tracks]
@@ -166,5 +161,4 @@ class TrackGrabber:
             'ave_duration': sum(duration) / len(duration),
             'ave_speechiness': sum(speechiness) / len(speechiness)
         }
-        #toReturn += ("\nDANCE: %s\nVALENCE: %s\nENERGY: %s\nDURATION: %s\nSPEECHINESS: %s\n"% (stats['ave_danceability'],stats['ave_valence'],stats['ave_energy'],stats['ave_duration'], stats['ave_speechiness']))
         return stats

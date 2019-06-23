@@ -17,7 +17,9 @@
     <div>
         <ol>
             {% for artist in artists %}
-            <li>{{artist['name']}} \\ {{artist['genres']}}</li>
+            <li>{{artist['name']}} || Genres: {% for genre in artist['genres'] %}
+                <span class="genre-text">{{genre}}~</span>{% endfor %}
+            </li>
             {% endfor %}
         </ol>
     </div>
