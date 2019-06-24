@@ -85,7 +85,6 @@ class PlaylistCreator:
         # delete old playlist tracks
         body = json.dumps(uris_dict)
         delete_playlist_tracks_url = self.playlists_url.format(playlist_id)
-        import pdb; pdb.set_trace()
         r = requests.delete(delete_playlist_tracks_url, verify=True, headers=self.headers, data=body)
         print("DELETE OLD PLAYLIST TRACKS STATUS CODE: " + str(r.status_code))
         # add new playlist tracks
