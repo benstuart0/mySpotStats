@@ -15,16 +15,13 @@ class PlaylistCreator:
         self.headers = {'content-type': 'application/json', 'authorization': '%s' % self.token}
         self.url = 'https://api.spotify.com/v1/users/{}/playlists'.format(self.user_id)
 
-    def create_playlist(self, time_range, tracks):
+    def create_playlist(self, time_range, tracks, playlist_name, playlist_description):
         """
         Main function of this class. Creates a playlist given time range and top tracks.
         """
-        playlist_name = "My Top Tracks of " + time_range
-        playlist_description = "My 99 most listened to tracks of " + time_range
         playlist_exists = self._check_playlist_exists(playlist_name)   # write over playlist if it already exists. currently doesn't work because the playlist doesn't show up when getting user's playlists.
         if playlist_exists:
             return self._override_playlist(playlist_exists, tracks)
-
         body = json.dumps({'name': playlist_name, 'description': playlist_description, 'public': False})
         r = requests.post(self.url, verify=True, headers=self.headers, data=body)
         if r.status_code // 100 == 2:    # check if response is some kind of 200

@@ -6,6 +6,7 @@ from spotify_requests.track import TrackGrabber
 from spotify_requests.artist import ArtistGrabber
 from spotify_requests.user import UserGrabber
 from spotify_requests.playlist_creator import PlaylistCreator
+from spotify_requests.recommendations import Recommendations
 import aws.dynamo as dynamo
 
 app = Flask(__name__)
@@ -75,10 +76,20 @@ def tracks(time_range="long_term"):
             if playlist_cancel == 'True':
                 print("Hey you canceled the playlist")
                 return redirect('/tracks/' + time_range)
+
+
             ug = UserGrabber(session['auth_header'])
             user = ug.get_user()
             pc = PlaylistCreator(session['auth_header'], user)
-            playlist = pc.create_playlist(times[time_range], tracks)
+            rec = Recommendations(session['auth_header'])
+            recommended_tracks = rec.get_recommendations(tracks=tracks[0:5])
+            playlist_name = "My Spot Stats Recommended Songs"
+            playlist_description = "Songs recommended by mySpotStats algorithm."
+            rec_playlist = pc.create_playlist(times[time_range], recommended_tracks, playlist_name, playlist_description)
+
+            playlist_name = "My Top Tracks of " + times[time_range]
+            playlist_description = "My 99 most listened to tracks of " + times[time_range]
+            playlist = pc.create_playlist(times[time_range], tracks, playlist_name, playlist_description)
             if not playlist:
                 redirect('/tracks')
         return render_template('tracks.html', tracks=tracks, stats=stats, time=times[time_range])
