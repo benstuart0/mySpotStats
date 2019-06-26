@@ -49,7 +49,7 @@ class Recommendations:
         tracks = r['tracks']    # there is another key in tracks called 'seeds', figuring this out may be key to better recs
         return tracks
 
-    def get_ordered_genres(self, artists):
+    def get_genre_frequency(self, artists):
         """
         Gets ordered list of genres based on how many of your top artists are in each genre
         """
@@ -70,10 +70,10 @@ class Recommendations:
         top_tracks = tops['tracks'][time_range]
         top_artists = tops['artists'][time_range]
 
-        top_genres = self.get_ordered_genres(tops['artists'][time_range])
+        top_genres = self.get_genre_frequency(tops['artists'][time_range])   # sort genres list
         sorted_genres = sorted(top_genres.items(), key=operator.itemgetter(1))[::-1]
-        top_genres = [genre[0] for genre in sorted_genres][0:5]
 
+        top_genres = [genre[0] for genre in sorted_genres][0:5]
         top_track_ids = [track['spotify_id'] for track in top_tracks][0:5]
         top_artist_ids = [artist['spotify_id'] for artist in top_artists][0:5]
         return {'track_ids': top_track_ids, 'artist_ids': top_artist_ids, 'genres': top_genres}

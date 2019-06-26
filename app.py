@@ -47,6 +47,10 @@ def home():
         # place user data in dynamoDB for (hopefully) later use
         data_cookie = request.cookies.get('data_retrieved')
         resp = make_response(render_template('home.html'))
+
+        rec_playlist = request.args.get('create_playlist')
+        if rec_playlist == 'rec_playlist':
+            return redirect('/recommended4376')
         if not data_cookie or data_cookie != 'yes':
             ug = UserGrabber(session['auth_header'])
             user = ug.get_user()
@@ -77,22 +81,9 @@ def tracks(time_range="long_term"):
         stats = tg.get_stats(tracks)
 
         create_playlist = request.args.get('create_playlist')
-        playlist_cancel = request.args.get('playlist_cancel')
-        if create_playlist == "Create Playlist":
-            if playlist_cancel == 'True':
-                print("Hey you canceled the playlist")
-                return redirect('/tracks/' + time_range)
+        if create_playlist == "tops_playlist":
+            return tops_playlist(tracks, time_range)
 
-
-            ug = UserGrabber(session['auth_header'])
-            user = ug.get_user()
-
-            pc = PlaylistCreator(session['auth_header'], user)
-            playlist_name = "My Top Tracks of " + times[time_range]
-            playlist_description = "My 99 most listened to tracks of " + times[time_range]
-            playlist = pc.create_playlist(times[time_range], tracks, playlist_name, playlist_description)
-            if not playlist:
-                redirect('/tracks')
         return render_template('tracks.html', tracks=tracks, stats=stats, time=times[time_range])
     return redirect('/auth')
 
@@ -109,8 +100,23 @@ def artists(time_range="long_term"):
         return render_template('artists.html', artists=artists, popularity=popularity, time=times[time_range])
     return redirect('/auth')
 
+def tops_playlist(tracks, time_range='long_term'):
+    ug = UserGrabber(session['auth_header'])
+    user = ug.get_user()
+
+    pc = PlaylistCreator(session['auth_header'], user)
+    playlist_name = "My Top Tracks of " + times[time_range]
+    playlist_description = "My 99 most listened to tracks of " + times[time_range]
+    playlist = pc.create_playlist(times[time_range], tracks, playlist_name, playlist_description)
+    if not playlist:
+        return redirect('/tracks')
+    return render_template('playlist_created.html')
+
 @app.route('/recommended4376')
 def recommend(time_range='medium_term'):
+    """
+    Endpoint that creates recommended playlist
+    """
     print("RECOMMEND BOIII")
     top_tracks = json.loads(request.cookies.get('top_tracks'))
     top_artists = json.loads(request.cookies.get('top_artists'))
@@ -123,7 +129,7 @@ def recommend(time_range='medium_term'):
     playlist_name = "My Spot Stats Recommended Songs"
     playlist_description = "Songs recommended by mySpotStats algorithm."
     rec_playlist = pc.create_playlist(times[time_range], recommended_tracks, playlist_name, playlist_description)
-    return redirect('/')
+    return render_template('playlist_created.html')
 
 @app.route('/callback')
 def callback():
