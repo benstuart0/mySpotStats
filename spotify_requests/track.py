@@ -154,11 +154,20 @@ class TrackGrabber:
         energy = [track['energy'] for track in tracks]
         duration = [track['duration'] for track in tracks]
         speechiness = [track['speechiness'] for track in tracks]
-        stats = {
-            'ave_danceability': sum(danceability) / len(danceability),
-            'ave_valence': sum(valence) / len(valence),
-            'ave_energy': sum(energy) / len(energy),
-            'ave_duration': sum(duration) / len(duration),
-            'ave_speechiness': sum(speechiness) / len(speechiness)
-        }
+        if len(danceability) > 0:
+            stats = {
+                'ave_danceability': sum(danceability) / len(danceability),
+                'ave_valence': sum(valence) / len(valence),
+                'ave_energy': sum(energy) / len(energy),
+                'ave_duration': sum(duration) / len(duration),
+                'ave_speechiness': sum(speechiness) / len(speechiness)
+            }
+        else:
+            stats = {
+                'ave_danceability': 0,
+                'ave_valence': 0,
+                'ave_energy': 0,
+                'ave_duration': 0,
+                'ave_speechiness': 0
+            }
         return stats
