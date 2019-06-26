@@ -73,7 +73,17 @@ class Recommendations:
         top_genres = self.get_genre_frequency(tops['artists'][time_range])   # sort genres list
         sorted_genres = sorted(top_genres.items(), key=operator.itemgetter(1))[::-1]
 
-        top_genres = [genre[0] for genre in sorted_genres][0:5]
-        top_track_ids = [track['spotify_id'] for track in top_tracks][0:5]
-        top_artist_ids = [artist['spotify_id'] for artist in top_artists][0:5]
+        if len(top_genres) >= 5:
+            top_genres = [genre[0] for genre in sorted_genres][0:5]
+        else:
+            top_genres = [genre[0] for genre in sorted_genres]
+        if len(top_tracks) >= 5:
+            top_track_ids = [track['spotify_id'] for track in top_tracks][0:5]
+        else:
+            top_track_ids = [track['spotify_id'] for track in top_tracks]
+        if len(top_artists) >= 5:
+            top_artist_ids = [artist['spotify_id'] for artist in top_artists][0:5]
+        else:
+            top_artist_ids = [artist['spotify_id'] for artist in top_artists]
+        
         return {'track_ids': top_track_ids, 'artist_ids': top_artist_ids, 'genres': top_genres}
