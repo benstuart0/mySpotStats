@@ -36,11 +36,13 @@ class ArtistGrabber:
         """
         total = 0
         counter = 0
+        avePop = 0
 
         for artist in artists:
             total += int(artist['popularity'])
             counter += 1
-        avePop = total / counter
+        if counter > 0:
+            avePop = total / counter
 
         if avePop < 55:
             return 'Your music tastes are obscure.'

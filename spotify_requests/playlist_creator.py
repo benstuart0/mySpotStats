@@ -15,16 +15,13 @@ class PlaylistCreator:
         self.headers = {'content-type': 'application/json', 'authorization': '%s' % self.token}
         self.url = 'https://api.spotify.com/v1/users/{}/playlists'.format(self.user_id)
 
-    def create_playlist(self, time_range, tracks):
+    def create_playlist(self, time_range, tracks, playlist_name, playlist_description):
         """
         Main function of this class. Creates a playlist given time range and top tracks.
         """
-        playlist_name = "My Top Tracks of " + time_range
-        playlist_description = "My 99 most listened to tracks of " + time_range
-        # playlist_exists = self._check_playlist_exists(playlist_name)   # write over playlist if it already exists. currently doesn't work because the playlist doesn't show up when getting user's playlists.
-        # if playlist_exists:
-        #     return self._override_playlist(playlist_exists, tracks)
-
+        playlist_exists = self._check_playlist_exists(playlist_name)   # write over playlist if it already exists. currently doesn't work because the playlist doesn't show up when getting user's playlists.
+        if playlist_exists:
+            return self._override_playlist(playlist_exists, tracks)
         body = json.dumps({'name': playlist_name, 'description': playlist_description, 'public': False})
         r = requests.post(self.url, verify=True, headers=self.headers, data=body)
         if r.status_code // 100 == 2:    # check if response is some kind of 200
@@ -52,6 +49,7 @@ class PlaylistCreator:
         track_uris = [track['uri'] for track in tracks]
         body = json.dumps({'uris': track_uris})
         r = requests.post(add_tracks_url, verify=True, headers=self.headers, data=body)
+        print("ADD SONGS TO PLAYLIST STATUS CODE: " + str(r.status_code))
         if r.status_code // 100 == 2:
             return True
         return False
@@ -80,23 +78,14 @@ class PlaylistCreator:
         uris = []
         for uri in track_uris:
             uris.append({'uri': uri})
-
         uris_dict = {'tracks': uris}
         # delete old playlist tracks
-        body = {'tracks':track_uris}
+        body = json.dumps(uris_dict)
         delete_playlist_tracks_url = self.playlists_url.format(playlist_id)
         r = requests.delete(delete_playlist_tracks_url, verify=True, headers=self.headers, data=body)
-        print("DELETE OLD PLAYLIST TRACKS STATUS CODE:")
-        print(r.status_code)
+        print("DELETE OLD PLAYLIST TRACKS STATUS CODE: " + str(r.status_code))
         # add new playlist tracks
-        new_track_uris = [track['uri'] for track in new_tracks]
-        body = {'tracks':new_track_uris}
-        add_tracks_to_playlist_url = self.playlists_url.format(playlist_id)
-        r = requests.post(self.playlists_url, verify=True, headers=self.headers, data=body)
-        print("ADD NEW PLAYLIST TRACKS STATUS CODE:")
-        print(r.status_code)
-        print("YOU JUSt oVERRODE THE PLAYLIST BOII")
-        return True
+        return self._add_songs_to_playlist(playlist_id, new_tracks)
 
     def _get_user_playlists(self):
         """

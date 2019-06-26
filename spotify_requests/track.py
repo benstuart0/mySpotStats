@@ -47,7 +47,7 @@ class TrackGrabber:
         self.offset = offset
         url = self.url_base + '?time_range=%s&limit=%s&offset=%s' % (self.time_range, self.limit, self.offset)
         r = requests.get(url, verify=True, headers=self.headers)
-        if str(r) == '<Response [200]>':
+        if r.status_code // 100 == 2:
             tracks = self._handle_response(r)
         else:
             print(str(r))

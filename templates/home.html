@@ -5,11 +5,18 @@
 <title>mySpotStats</title>
 
 <head>
-    <script src="../static/jquery-3.4.1.min.js"></script>
     <div class="header-container">
         <div id="site-title">
             <h2><a href="/">mySpotStats</a></h2>
         </div>
+        <div id="playlist-button">
+            <form onsubmit="createRecommendedPlaylist()">
+                <button onsubmit="createPlaylist()" type="submit" name="create_playlist" value="rec_playlist">
+                    Create Playlist of Recommended Tracks
+                </button>
+            </form>
+        </div>
+        <p id="playlist-button-response"></p>
     </div>
 </head>
 

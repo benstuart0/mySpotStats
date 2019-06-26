@@ -26,8 +26,9 @@ def update_db(user, auth_header):
         'short_term_artists': artists['short_term'],
         'medium_term_artists': artists['medium_term'],
         'long_term_artists': artists['long_term']
-    }
-)
+        }
+    )
+    return {'artists': artists, 'tracks': tracks}
 
 def _get_tracks(auth_header):
     """
