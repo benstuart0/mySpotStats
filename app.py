@@ -30,7 +30,7 @@ CLIENT_SECRET = CLIENT['secret']
 SCOPE = "user-read-private user-top-read playlist-modify-public playlist-modify-private user-read-email playlist-read-private"
 REDIRECT_URI = CLIENT['redirect_uri']
 # REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for heroku production
-# REDIRECT_URI = 'http://www.myspotstats.com/callback'    # uncomment for live domain
+REDIRECT_URI = 'http://www.myspotstats.com/callback'    # uncomment for live domain
 
 @app.route('/')
 def home():
@@ -137,7 +137,7 @@ def recommend(time_range='medium_term'):
     ug = UserGrabber(session['auth_header'])
     user = ug.get_user()
     pc = PlaylistCreator(session['auth_header'], user)
-    playlist_name = "My Spot Stats Recommended Songs"
+    playlist_name = "Recommended by mySpotStats"
     playlist_description = "Songs recommended by mySpotStats algorithm."
     rec_playlist = pc.create_playlist(times[time_range], recommended_tracks, playlist_name, playlist_description)
     return render_template('playlist_created.html')
