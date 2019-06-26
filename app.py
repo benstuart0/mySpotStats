@@ -103,6 +103,9 @@ def artists(time_range="long_term"):
     return redirect('/auth')
 
 def tops_playlist(tracks, time_range='long_term'):
+    """
+    Method to create playlist of top tracks from tracks page.
+    """
     ug = UserGrabber(session['auth_header'])
     user = ug.get_user()
 
@@ -110,8 +113,10 @@ def tops_playlist(tracks, time_range='long_term'):
     playlist_name = "My Top Tracks of " + times[time_range]
     playlist_description = "My 99 most listened to tracks of " + times[time_range]
     playlist = pc.create_playlist(times[time_range], tracks, playlist_name, playlist_description)
-    if not playlist:
-        return redirect('/tracks')
+
+    if not playlist:    # error handling
+        return render_template('playlist_failed.html')
+
     return render_template('playlist_created.html')
 
 @app.route('/recommended4376')
@@ -125,6 +130,10 @@ def recommend(time_range='medium_term'):
     top_genres = json.loads(request.cookies.get('top_genres'))
     rec = Recommendations(session['auth_header'])
     recommended_tracks = rec.get_recommendations(top_tracks,top_artists,top_genres)
+
+    if not recommended_tracks:  # error handling
+        return render_template('playlist_failed.html')
+
     ug = UserGrabber(session['auth_header'])
     user = ug.get_user()
     pc = PlaylistCreator(session['auth_header'], user)
