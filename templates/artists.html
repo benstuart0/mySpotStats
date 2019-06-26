@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 
 <html>
-<link rel="stylesheet" href="../static/style.css">
-<title>mySpotStats</title>
-
-<head>
-    <div class="header-container">
-        <div id="site-title">
-            <h2><a href="/">mySpotStats</a></h2>
-        </div>
-    </div>
-</head>
-
-<body>
-    <h3>Top Artists of {{time}}:</h3>
-    <div>
-        <ol>
+    <head>
+        <link href="//fonts.googleapis.com/css?family=Faster+One&display=swap" rel="stylesheet"  type='text/css'>
+        <link rel="stylesheet" href="../static/style.css">
+        <title>mySpotStats</title>
+    </head>
+    <body>
+        <h2><a href="/">mySpotStats</a></h2>
+        <h3>Top Artists of {{time}}:</h3>
+        <div>
             {% for artist in artists %}
-            <li>{{artist['name']}} || Genres: {% for genre in artist['genres'] %}
-                <span class="genre-text">{{genre}}~</span>{% endfor %}
-            </li>
+                <div class="artist">
+                    <rank>{{loop.index}}. </rank>
+                    <name>{{artist['name']}}</name>
+                    <genres>
+                        {% for genre in artist['genres'] %}
+                            <genre>{{genre}}</genre>
+                        {% endfor %}
+                    </genres>
+                </div>
             {% endfor %}
-        </ol>
-    </div>
-    <div>
-        <h4>Verdict: {{popularity}}</h4>
-    </div>
-</body>
-
+        </div>
+        <div>
+            <h4>Verdict: {{popularity}}</h4>
+        </div>
+    </body>
 </html>

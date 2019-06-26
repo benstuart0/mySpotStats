@@ -1,6 +1,16 @@
+@font-face {
+    font-family: 'Monoton';
+    src: url('Monoton-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('Roboto-Regular.ttf');
+}
+
 html {
-    background-color: #80C1CA;
-    font-family: georgia;
+    background-color: #FFFAFA;
+    font-family: "Roboto", sans-serif
 }
 
 a:hover {
@@ -13,36 +23,106 @@ a {
 }
 
 h2 {
-    margin-top: 0px;
-    margin-bottom: 0px;
+    font-family: "Monoton", sans-serif;
+    font-size: 70px;
+    text-align: center;
 }
 
-.song-key {
-    color: #664A25;
+h3 {
+    font-size: 40px;
 }
 
-.genre-text {
-    color: #664A25;
+body {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.header-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 100% .00001em;
+li {
+    border: 1px solid black;
+}
+
+.artist {
     width: 100%;
-    height: 9%;
-    margin-bottom: -1fr;
+    display: grid;
+    grid-template-areas: "rank name"
+                         "genres genres";
+    grid-template-rows: auto auto;
+    grid-template-columns: auto 1fr;
+    margin-top: 5px;
+}
+
+.artist > rank {
+    grid-area: rank;
+    padding-right: 5px;
+    font-size: 30px;
+}
+
+.artist > name {
+    grid-area: name;
+    font-size: 30px;
+}
+
+.artist > genres {
+    grid-area: genres;
+}
+
+.artist > genres > genre {
+    background-color: lightgreen;
+    font-weight: 600;
+    padding: 4px;
+    margin: 5px;
+    border-radius: 10px;
+    white-space:nowrap;
+    line-height: 35px;
+}
+
+.track {
+    width: 100%;
+    display: grid;
+    grid-template-areas: "rank name"
+                         "genres genres";
+    grid-template-rows: auto auto;
+    grid-template-columns: auto 1fr;
+    margin-top: 5px;
+}
+
+.track > rank {
+    grid-area: rank;
+    padding-right: 5px;
+    font-size: 30px;
+}
+
+.track > name {
+    grid-area: name;
+    font-size: 30px;
+}
+
+.track > genres {
+    grid-area: genres;
+}
+
+.track > genres > genre {
+    background-color: lightgreen;
+    font-weight: 600;
+    padding: 4px;
+    margin: 5px;
+    border-radius: 10px;
+    white-space:nowrap;
+    line-height: 35px;
 }
 
 #playlist-button {
-    grid-column: 2;
-    margin-top: 3%;
-    margin-left: 69%;
+    text-align: center;
+    align-content: center;
 }
 
-#site-title {
-    grid-column: 1;
-    margin-top: 2%;
+input {
+    background-color: #1DB954;
+    border: 0px;
+    border-radius: 5px;
+    font-size: 20px;
+    padding: 10px;
 }
 
 #playlist-button-response {

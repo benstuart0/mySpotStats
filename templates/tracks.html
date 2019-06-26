@@ -1,38 +1,35 @@
 <!DOCTYPE html>
 <html>
-<link rel="stylesheet" href="../static/style.css">
-<script src="../static/script.js"></script>
-<title>mySpotStats</title>
-
-<head>
-    <div class="header-container">
-        <div id="site-title">
-            <h2><a href="/">mySpotStats</a></h2>
-        </div>
-        <div id="playlist-button">
-            <form onsubmit="createPlaylist()">
-                <input onsubmit="createPlaylist()" type="submit" name="create_playlist" value="Create Playlist">
-            </form>
-        </div>
-        <p id="playlist-button-response"></p>
-    </div>
-</head>
-
-<body>
-    <h3>Top Tracks of {{time}}:</h3>
-    <ol>
-        {% for track in tracks %}
-        <li>{{track['artist']}} - {{track['title']}} || <span class="song-key">{{track['key']}}</span></li>
-        {% endfor %}
-    </ol>
-    <h4>Averages:</h4>
-    <ul>
-        <li>Danceability: {{stats['ave_danceability']}}</li>
-        <li>Valence: {{stats['ave_valence']}}</li>
-        <li>Energy: {{stats['ave_energy']}}</li>
-        <li>Duration: {{stats['ave_duration']}}</li>
-        <li>Speechiness: {{stats['ave_speechiness']}}</li>
-    </ul>
-</body>
-
+    <head>
+        <link rel="stylesheet" href="../static/style.css">
+        <script src="../static/script.js"></script>
+        <title>mySpotStats</title>
+    </head>
+    <body>
+        <div class="header-container">
+                <div id="site-title">
+                    <h2><a href="/">mySpotStats</a></h2>
+                </div>
+                <div id="playlist-button" >
+                    <form onsubmit="createPlaylist()">
+                        <input id="submit-button" onsubmit="createPlaylist()" type="submit" name="create_playlist" value="Create Playlist">
+                    </form>
+                </div>
+                <p id="playlist-button-response"></p>
+            </div>
+        <h3>Top Tracks of {{time}}:</h3>
+        <ol>
+            {% for track in tracks %}
+            <li>{{track['artist']}} - {{track['title']}} || <span class="song-key">{{track['key']}}</span></li>
+            {% endfor %}
+        </ol>
+        <h4>Averages:</h4>
+        <ul>
+            <li>Danceability: {{stats['ave_danceability']}}</li>
+            <li>Valence: {{stats['ave_valence']}}</li>
+            <li>Energy: {{stats['ave_energy']}}</li>
+            <li>Duration: {{stats['ave_duration']}}</li>
+            <li>Speechiness: {{stats['ave_speechiness']}}</li>
+        </ul>
+    </body>
 </html>

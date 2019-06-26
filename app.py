@@ -11,6 +11,8 @@ import aws.dynamo as dynamo
 app = Flask(__name__)
 app.secret_key = 'thisIsTheSecretKeyAYYYY'
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['TESTING'] = True
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 times = {
     'short_term': 'the Last Month',
