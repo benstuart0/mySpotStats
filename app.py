@@ -50,8 +50,14 @@ def home():
         if not data_cookie or data_cookie != 'yes':
             ug = UserGrabber(session['auth_header'])
             user = ug.get_user()
-            dynamo.update_db(user, session['auth_header'])
+            user_tops = dynamo.update_db(user, session['auth_header'])
+            # cache user tops for recommendations
+            rec = Recommendations(session['auth_header'])
+            rec_cookie_data = rec.get_rec_cookie_data(user_tops, 'medium_term')
             resp.set_cookie('data_retrieved', 'yes')
+            resp.set_cookie('top_tracks', json.dumps(rec_cookie_data['track_ids']))
+            resp.set_cookie('top_artists', json.dumps(rec_cookie_data['artist_ids']))
+            resp.set_cookie('top_genres', json.dumps(rec_cookie_data['genres']))
         try:
             return resp
         except:
@@ -80,13 +86,8 @@ def tracks(time_range="long_term"):
 
             ug = UserGrabber(session['auth_header'])
             user = ug.get_user()
-            pc = PlaylistCreator(session['auth_header'], user)
-            rec = Recommendations(session['auth_header'])
-            recommended_tracks = rec.get_recommendations(tracks=tracks[0:5])
-            playlist_name = "My Spot Stats Recommended Songs"
-            playlist_description = "Songs recommended by mySpotStats algorithm."
-            rec_playlist = pc.create_playlist(times[time_range], recommended_tracks, playlist_name, playlist_description)
 
+            pc = PlaylistCreator(session['auth_header'], user)
             playlist_name = "My Top Tracks of " + times[time_range]
             playlist_description = "My 99 most listened to tracks of " + times[time_range]
             playlist = pc.create_playlist(times[time_range], tracks, playlist_name, playlist_description)
@@ -107,6 +108,22 @@ def artists(time_range="long_term"):
         popularity = ag.get_pop_rating(artists)
         return render_template('artists.html', artists=artists, popularity=popularity, time=times[time_range])
     return redirect('/auth')
+
+@app.route('/recommended4376')
+def recommend(time_range='medium_term'):
+    print("RECOMMEND BOIII")
+    top_tracks = json.loads(request.cookies.get('top_tracks'))
+    top_artists = json.loads(request.cookies.get('top_artists'))
+    top_genres = json.loads(request.cookies.get('top_genres'))
+    rec = Recommendations(session['auth_header'])
+    recommended_tracks = rec.get_recommendations(top_tracks,top_artists,top_genres)
+    ug = UserGrabber(session['auth_header'])
+    user = ug.get_user()
+    pc = PlaylistCreator(session['auth_header'], user)
+    playlist_name = "My Spot Stats Recommended Songs"
+    playlist_description = "Songs recommended by mySpotStats algorithm."
+    rec_playlist = pc.create_playlist(times[time_range], recommended_tracks, playlist_name, playlist_description)
+    return redirect('/')
 
 @app.route('/callback')
 def callback():
