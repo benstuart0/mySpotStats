@@ -39,7 +39,7 @@ class Recommendations:
             return recommended_tracks
         else:
             print("Recommendations Request Status Code: " + str(r.status_code))
-            exit()
+            return False
 
     def _handle_response(self, r):
         """
@@ -85,5 +85,5 @@ class Recommendations:
             top_artist_ids = [artist['spotify_id'] for artist in top_artists][0:5]
         else:
             top_artist_ids = [artist['spotify_id'] for artist in top_artists]
-        
+
         return {'track_ids': top_track_ids, 'artist_ids': top_artist_ids, 'genres': top_genres}
