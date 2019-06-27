@@ -166,6 +166,7 @@ def set_data_cookies(resp):
     """
     Method to set essential cookies to hold basic user data
     """
+    tomorrow = datetime.now() + timedelta(days=1)
     ug = UserGrabber(session['auth_header'])    # updates database with user data
     user = ug.get_user()
     user_tops = dynamo.update_db(user, session['auth_header'])
@@ -174,7 +175,6 @@ def set_data_cookies(resp):
     # cache user tops for recommendations
     rec = Recommendations(session['auth_header'])
     rec_cookie_data = rec.get_rec_cookie_data(user_tops, 'short_term', session['auth_header'])
-    tomorrow = datetime.now() + timedelta(days=1)
     resp.set_cookie('top_tracks', json.dumps(rec_cookie_data['track_ids']), expires=tomorrow)
     resp.set_cookie('top_artists', json.dumps(rec_cookie_data['artist_ids']), expires=tomorrow)
     resp.set_cookie('top_genres', json.dumps(rec_cookie_data['genres']), expires=tomorrow)
