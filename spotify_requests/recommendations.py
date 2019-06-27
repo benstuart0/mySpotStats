@@ -8,7 +8,7 @@ class Recommendations:
         self.token = header
         self.headers = {'content-type': 'application/json', 'authorization': '%s' % self.token}
 
-    def get_recommendations(self, track_ids=[], artist_ids=[], genres=[]):
+    def get_recommendations(self, stats, track_ids=[], artist_ids=[], genres=[]):
         """
         Gets list of recommended songs based on 5 seed values of artist, tracks, or genres
         """
@@ -20,7 +20,11 @@ class Recommendations:
             query_string += artist
             query_string += ','
         query_string = query_string[:-1]    # delete comma from query
-
+        query_string += '&target_danceability='+ str(stats['ave_danceability'])
+        query_string += '&target_valence='+ str(stats['ave_valence'])
+        query_string += '&target_energy='+ str(stats['ave_energy'])
+        query_string += '&target_speechiness='+ str(stats['ave_speechiness'])
+        query_string += '&target_duration='+ str(int(stats['ave_duration']) * 1000)
         #query_string += '&seed_tracks='
         # for track in track_ids:
         #     query_string += track
@@ -34,11 +38,11 @@ class Recommendations:
 
         url = self.url_base + query_string
         r = requests.get(url, verify=True, headers=self.headers)
+        print("Recommendations Request Status Code: " + str(r.status_code))
         if r.status_code // 100 == 2:
             recommended_tracks = self._handle_response(r)
             return recommended_tracks
         else:
-            print("Recommendations Request Status Code: " + str(r.status_code))
             return False
 
     def _handle_response(self, r):
@@ -63,12 +67,14 @@ class Recommendations:
                     top_genres[genre] = 1
         return top_genres
 
-    def get_rec_cookie_data(self, tops, time_range):
+    def get_rec_cookie_data(self, tops, time_range, auth_header):
         """
         Gets top 5 artists, tracks, and genres
         """
         top_tracks = tops['tracks'][time_range]
         top_artists = tops['artists'][time_range]
+        tg = TrackGrabber(auth_header)
+        stats = tg.get_stats(top_tracks)
 
         top_genres = self.get_genre_frequency(tops['artists'][time_range])   # sort genres list
         sorted_genres = sorted(top_genres.items(), key=operator.itemgetter(1))[::-1]
@@ -86,4 +92,4 @@ class Recommendations:
         else:
             top_artist_ids = [artist['spotify_id'] for artist in top_artists]
 
-        return {'track_ids': top_track_ids, 'artist_ids': top_artist_ids, 'genres': top_genres}
+        return {'track_ids': top_track_ids, 'artist_ids': top_artist_ids, 'genres': top_genres, 'stats': stats}

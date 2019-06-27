@@ -59,11 +59,12 @@ def home():
             user_tops = dynamo.update_db(user, session['auth_header'])
             # cache user tops for recommendations
             rec = Recommendations(session['auth_header'])
-            rec_cookie_data = rec.get_rec_cookie_data(user_tops, 'medium_term')
+            rec_cookie_data = rec.get_rec_cookie_data(user_tops, 'short_term', session['auth_header'])
             resp.set_cookie('data_retrieved', 'yes')
             resp.set_cookie('top_tracks', json.dumps(rec_cookie_data['track_ids']))
             resp.set_cookie('top_artists', json.dumps(rec_cookie_data['artist_ids']))
             resp.set_cookie('top_genres', json.dumps(rec_cookie_data['genres']))
+            resp.set_cookie('track_stats', json.dumps(rec_cookie_data['stats']))
         try:
             return resp
         except:
@@ -128,8 +129,9 @@ def recommend(time_range='medium_term'):
     top_tracks = json.loads(request.cookies.get('top_tracks'))
     top_artists = json.loads(request.cookies.get('top_artists'))
     top_genres = json.loads(request.cookies.get('top_genres'))
+    stats = json.loads(request.cookies.get('track_stats'))
     rec = Recommendations(session['auth_header'])
-    recommended_tracks = rec.get_recommendations(top_tracks,top_artists,top_genres)
+    recommended_tracks = rec.get_recommendations(top_tracks,top_artists,top_genres,stats)
 
     if not recommended_tracks:  # error handling
         return render_template('playlist_failed.html')
