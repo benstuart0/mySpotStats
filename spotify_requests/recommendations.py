@@ -21,7 +21,6 @@ class Recommendations:
             query_string += artist
             query_string += ','
         query_string = query_string[:-1]    # delete comma from query
-        import pdb; pdb.set_trace()
         query_string += '&target_danceability='+ str(stats['ave_danceability'])
         query_string += '&target_valence='+ str(stats['ave_valence'])
         query_string += '&target_energy='+ str(stats['ave_energy'])
