@@ -117,15 +117,6 @@ def recommend(time_range='medium_term'):
     rec_playlist = pc.create_playlist(times[time_range], recommended_tracks, playlist_name, playlist_description)
     return render_template('playlist_created.html')
 
-def convert_stats(stats):
-    return {
-        'ave_danceability': float(stats['ave_danceability']),
-        'ave_valence': float(stats['ave_valence']),
-        'ave_energy': float(stats['ave_energy']),
-        'ave_speechiness': float(stats['ave_speechiness']),
-        'ave_duration': float(stats['ave_duration']),
-    }
-
 @app.route('/callback')
 def callback():
     """
@@ -178,8 +169,18 @@ def set_data_cookies(resp):
     resp.set_cookie('top_tracks', json.dumps(rec_cookie_data['track_ids']), expires=tomorrow)
     resp.set_cookie('top_artists', json.dumps(rec_cookie_data['artist_ids']), expires=tomorrow)
     resp.set_cookie('top_genres', json.dumps(rec_cookie_data['genres']), expires=tomorrow)
-    resp.set_cookie('track_stats', json.dumps(rec_cookie_data['stats']), expires=tomorrow)
+    stats = convert_stats(rec_cookie_data['stats'])
+    resp.set_cookie('track_stats', json.dumps(stats), expires=tomorrow)
     return response
+
+def convert_stats(stats):
+    return {
+        'ave_danceability': float(stats['ave_danceability']),
+        'ave_valence': float(stats['ave_valence']),
+        'ave_energy': float(stats['ave_energy']),
+        'ave_speechiness': float(stats['ave_speechiness']),
+        'ave_duration': float(stats['ave_duration']),
+    }
 
 
 if __name__ == "__main__":
