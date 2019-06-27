@@ -1,6 +1,7 @@
 import json
 import requests
 import operator
+from .track import TrackGrabber
 
 class Recommendations:
     def __init__(self, header):
@@ -20,11 +21,13 @@ class Recommendations:
             query_string += artist
             query_string += ','
         query_string = query_string[:-1]    # delete comma from query
+        import pdb; pdb.set_trace()
         query_string += '&target_danceability='+ str(stats['ave_danceability'])
         query_string += '&target_valence='+ str(stats['ave_valence'])
         query_string += '&target_energy='+ str(stats['ave_energy'])
         query_string += '&target_speechiness='+ str(stats['ave_speechiness'])
         query_string += '&target_duration='+ str(int(stats['ave_duration']) * 1000)
+
         #query_string += '&seed_tracks='
         # for track in track_ids:
         #     query_string += track
