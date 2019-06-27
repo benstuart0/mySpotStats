@@ -8,6 +8,7 @@ from spotify_requests.user import UserGrabber
 from spotify_requests.playlist_creator import PlaylistCreator
 from spotify_requests.recommendations import Recommendations
 import aws.dynamo as dynamo
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'thisIsTheSecretKeyAYYYY'
@@ -30,7 +31,7 @@ CLIENT_SECRET = CLIENT['secret']
 SCOPE = "user-read-private user-top-read playlist-modify-public playlist-modify-private user-read-email playlist-read-private"
 REDIRECT_URI = CLIENT['redirect_uri']
 # REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for heroku production
-# REDIRECT_URI = 'http://www.myspotstats.com/callback'    # uncomment for live domain
+REDIRECT_URI = 'http://www.myspotstats.com/callback'    # uncomment for live domain
 
 @app.route('/')
 def home():
@@ -46,25 +47,15 @@ def home():
         elif type:
             return redirect('/tracks') if type=='tracks' else redirect('/artists')
 
-        # place user data in dynamoDB for (hopefully) later use
-        data_cookie = request.cookies.get('data_retrieved')
-        resp = make_response(render_template('home.html'))
-
         rec_playlist = request.args.get('create_playlist')
         if rec_playlist == 'rec_playlist':
             return redirect('/recommended4376')
+
+        # place user data in dynamoDB for (hopefully) later use
+        data_cookie = request.cookies.get('data_retrieved')
+        resp = make_response(render_template('home.html'))
         if not data_cookie or data_cookie != 'yes':
-            ug = UserGrabber(session['auth_header'])
-            user = ug.get_user()
-            user_tops = dynamo.update_db(user, session['auth_header'])
-            # cache user tops for recommendations
-            rec = Recommendations(session['auth_header'])
-            rec_cookie_data = rec.get_rec_cookie_data(user_tops, 'short_term', session['auth_header'])
-            resp.set_cookie('data_retrieved', 'yes')
-            resp.set_cookie('top_tracks', json.dumps(rec_cookie_data['track_ids']))
-            resp.set_cookie('top_artists', json.dumps(rec_cookie_data['artist_ids']))
-            resp.set_cookie('top_genres', json.dumps(rec_cookie_data['genres']))
-            resp.set_cookie('track_stats', json.dumps(rec_cookie_data['stats']))
+            resp = set_data_cookies(resp)
         try:
             return resp
         except:
@@ -102,23 +93,6 @@ def artists(time_range="long_term"):
         popularity = ag.get_pop_rating(artists)
         return render_template('artists.html', artists=artists, popularity=popularity, time=times[time_range])
     return redirect('/auth')
-
-def tops_playlist(tracks, time_range='long_term'):
-    """
-    Method to create playlist of top tracks from tracks page.
-    """
-    ug = UserGrabber(session['auth_header'])
-    user = ug.get_user()
-
-    pc = PlaylistCreator(session['auth_header'], user)
-    playlist_name = "My Top Tracks of " + times[time_range]
-    playlist_description = "My 99 most listened to tracks of " + times[time_range]
-    playlist = pc.create_playlist(times[time_range], tracks, playlist_name, playlist_description)
-
-    if not playlist:    # error handling
-        return render_template('playlist_failed.html')
-
-    return render_template('playlist_created.html')
 
 @app.route('/recommended4376')
 def recommend(time_range='medium_term'):
@@ -162,6 +136,43 @@ def auth():
     + '&client_id=' + CLIENT_ID
     + '&scope=' + quote(SCOPE.encode("utf-8")) +
     '&redirect_uri=' +  quote(REDIRECT_URI.encode("utf-8")))
+
+def tops_playlist(tracks, time_range='long_term'):
+    """
+    Method to create playlist of top tracks from tracks page.
+    """
+    ug = UserGrabber(session['auth_header'])
+    user = ug.get_user()
+
+    pc = PlaylistCreator(session['auth_header'], user)
+    playlist_name = "My Top Tracks of " + times[time_range]
+    playlist_description = "My 99 most listened to tracks of " + times[time_range]
+    playlist = pc.create_playlist(times[time_range], tracks, playlist_name, playlist_description)
+
+    if not playlist:    # error handling
+        return render_template('playlist_failed.html')
+
+    return render_template('playlist_created.html')
+
+def set_data_cookies(response):
+    """
+    Method to set essential cookies to hold basic user data
+    """
+    ug = UserGrabber(session['auth_header'])    # updates database with user data
+    user = ug.get_user()
+    user_tops = dynamo.update_db(user, session['auth_header'])
+    resp.set_cookie('data_retrieved', 'yes', expires=tomorrow)
+
+    # cache user tops for recommendations
+    rec = Recommendations(session['auth_header'])
+    rec_cookie_data = rec.get_rec_cookie_data(user_tops, 'short_term', session['auth_header'])
+    tomorrow = datetime.now() + timedelta(days=1)
+    resp.set_cookie('top_tracks', json.dumps(rec_cookie_data['track_ids']), expires=tomorrow)
+    resp.set_cookie('top_artists', json.dumps(rec_cookie_data['artist_ids']), expires=tomorrow)
+    resp.set_cookie('top_genres', json.dumps(rec_cookie_data['genres']), expires=tomorrow)
+    resp.set_cookie('track_stats', json.dumps(rec_cookie_data['stats']), expires=tomorrow)
+    return response
+
 
 if __name__ == "__main__":
     session.init_app(app)
