@@ -171,7 +171,7 @@ def set_data_cookies(resp):
     resp.set_cookie('top_genres', json.dumps(rec_cookie_data['genres']), expires=tomorrow)
     stats = convert_stats(rec_cookie_data['stats'])
     resp.set_cookie('track_stats', json.dumps(stats), expires=tomorrow)
-    return response
+    return resp
 
 def convert_stats(stats):
     return {
