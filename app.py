@@ -8,7 +8,7 @@ from spotify_requests.user import UserGrabber
 from spotify_requests.playlist_creator import PlaylistCreator
 from spotify_requests.recommendations import Recommendations
 import aws.dynamo as dynamo
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = 'thisIsTheSecretKeyAYYYY'
