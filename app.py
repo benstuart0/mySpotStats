@@ -162,7 +162,7 @@ def tops_playlist(tracks, time_range='long_term'):
 
     return render_template('playlist_created.html')
 
-def set_data_cookies(response):
+def set_data_cookies(resp):
     """
     Method to set essential cookies to hold basic user data
     """
