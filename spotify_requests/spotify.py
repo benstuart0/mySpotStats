@@ -36,8 +36,6 @@ def authorize(auth_token, redirect_uri):
 
     # tokens are returned to the app
     response_data = json.loads(post_request.text)
-    print("RESPONSE DATA:")
-    print(response_data)
     access_token = response_data['access_token']
 
     # use the access token to access Spotify API
