@@ -30,7 +30,7 @@ CLIENT_SECRET = CLIENT['secret']
 SCOPE = "user-read-private user-top-read playlist-modify-public playlist-modify-private user-read-email playlist-read-private"
 REDIRECT_URI = CLIENT['redirect_uri']
 # REDIRECT_URI = 'http://myspotstats.herokuapp.com/callback' # uncomment for heroku production
-# REDIRECT_URI = 'http://www.myspotstats.com/callback'    # uncomment for live domain
+REDIRECT_URI = 'http://www.myspotstats.com/callback'    # uncomment for live domain
 
 @app.route('/')
 def home():
@@ -171,6 +171,10 @@ def auth():
     + '&client_id=' + CLIENT_ID
     + '&scope=' + quote(SCOPE.encode("utf-8")) +
     '&redirect_uri=' +  quote(REDIRECT_URI.encode("utf-8")))
+
+@app.errorhandler(401)
+def handle_401():
+    return redirect('/auth')
 
 if __name__ == "__main__":
     session.init_app(app)
